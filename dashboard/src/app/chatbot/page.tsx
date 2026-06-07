@@ -600,7 +600,7 @@ export default function ChatbotPage() {
                       ...last,
                       content:
                         last.content ||
-                        "⚠️ Stream error: Unable to process part of the response. Please try again.",
+                        "Stream error: Unable to process part of the response. Please try again.",
                     };
                   }
 

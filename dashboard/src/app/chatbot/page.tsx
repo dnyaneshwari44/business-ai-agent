@@ -306,6 +306,7 @@ export default function ChatbotPage() {
           break;
         }
       }
+
       const summary = messages
         .slice(0, msgIndex + 1)
         .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
@@ -314,15 +315,20 @@ export default function ChatbotPage() {
 
       try {
         setEscalatingMsgId(null);
+
         const res = await fetch("/api/escalate", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+          },
           body: JSON.stringify({
-            query: query,
-            summary: summary,
+            query,
+            summary,
             assignee_name: assigneeName,
           }),
         });
+
         if (!res.ok) {
           const err = await res.json();
           showToast(
@@ -331,7 +337,7 @@ export default function ChatbotPage() {
           );
         } else {
           showToast("Conversation escalated to Slack successfully!", "success");
-          // Refresh employees to bump issue counts
+
           fetch("/api/employees", {
             cache: "no-store",
             headers: { "Cache-Control": "no-cache" },
@@ -346,7 +352,7 @@ export default function ChatbotPage() {
         showToast("Error escalating conversation.", "error");
       }
     },
-    [messages],
+    [messages, showToast],
   );
 
   const switchChat = useCallback(
